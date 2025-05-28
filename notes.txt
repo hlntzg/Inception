@@ -1,0 +1,26 @@
+# Docker
+
+## Docker Images
+
+### nginx
+it is basically a simple web server
+
+### mariadb
+
+### wordpress
+
+## Docker container
+
+
+## Docker Registries
+Storage and distribution system of Docker images.
+Official images available and maintained by software authors or in collaboration with the Docker community.
+'Docker Hub' is one of the biggest Docker Registry hosted by Docker.
+
+### commands
+docker images : list all docker images locally
+docker ps : list running containers
+docker pull <name>:<tag> : pull an image from a registry
+docker run <name>:<tag> : creates a container from a given image and starts it
+docker run -d [--detach] <name>:<tag> : runs container in background and prints the container ID
+docker logs <container> : view logs from service running inside the container, which are present at the time of execution
