@@ -1,6 +1,145 @@
 # Docker
+Docker is a set of platform as a service (PaaS) products that use OS-level virtualization to deliver software in packages called containers
+
+## Virtual Machines vs. Containers
+- VMs run full operating systems on virtualized hardware via a hypervisor. They offer strong isolation and can run different OS environments, but are heavier, slower to start, and consume more resources.
+- Containers share the host OS kernel and only include the app and its dependencies, making them lightweight, fast, and efficient. They’re ideal for consistent application deployment across environments.
+
+Key Differences:
+- Isolation: VMs provide stronger isolation; containers isolate at the process level.
+- Performance: Containers start faster and use fewer resources.
+- Use Cases: VMs are better for full OS environments; containers are better for deploying applications quickly and portably.
+- [!] Docker depends on the Linux kernel, so on macOS and Windows, it runs inside a lightweight VM to function.
+
+## Docker container
+Containers are packages of software, including the application and its dependencies.
+[!] You need an image and a container runtime (Docker engine) to create a container.
+Containers are isolated environments in the host machine with the ability to interact with each other and the host machine itself via defined methods (TCP/UDP).
+
+### Docker container benefits:
+1 - "Works on my machine" Problem
+Containers eliminate environment inconsistencies by ensuring the same setup runs across development, testing, and production, avoiding surprises when deploying to servers.
+
+2 - Isolated Environments
+Different apps with conflicting dependencies (e.g., various Python versions) can run on the same machine without interference, thanks to containerized isolation.
+
+3 - Simplified Development Setup
+Developers can easily run complex environments (e.g., apps requiring databases like Postgres or Redis) with one command, avoiding the hassle of manual setup.
+
+4 - Scalability and Reliability
+Containers start and stop quickly. With orchestration tools, apps can scale based on demand, and failed containers can be automatically replaced without downtime.
 
 ## Docker Images
+A Docker image is a lightweight, standalone, and executable package that contains everything needed to run a piece of software.
+Images are like recipes (blueprints) that include everything needed to create a container: app code, dependencies, and configuration.
+
+Key Points:
+- Images are immutable – they cannot be changed once created.
+- You create new images by adding layers to a base image.
+- Containers are created from images, and multiple containers can be made from a single image.
+- Images are typically built using a Dockerfile
+
+## Building your own Docker images
+We need to create a 'definition' of how to build a image from our application. 
+[Dockerfile] builds a > [Docker Image] that runs as a > [Docker Container]
+
+### Dockerfile
+Dockerfile is a file that is by default called Dockerfile. It is the instruction set for building an image.
+Dockerfiles start from a parent image or 'base image' (```FROM <image>:<tag>```)
+
+``` FROM <image>:<tag>
+
+RUN <install some dependencies>
+
+CMD <command that is executed on `docker container run`> ```
+
+Key Points:
+- FROM: build this image from the specified image
+- RUN: execute any command in a shell inside the container environment
+- COPY: copy files or directories from <src> and adds them to the filesystem of the container at the path <dest> (e.g. /app/)
+- WORKDIR: set the working directory for all following commands
+- CMD: instruction to be executed when Docker container starts – only one 'CMD' instruction in a Dockerfile
+
+```docker build -t <image_name>:<tag> <dockerfile_location>```
+
+[!] Remember: Docker image consists of layers. Each instruction in the Dockerfile creates a layer. The layers are stacked and each one is a delta of the changes from the previous layer.
+
+## Removing Docker Images and Containers
+Before removing a Docker image, you must delete any containers created from it.
+
+Key Steps:
+1. **Attempt to remove image:**
+
+   ```bash
+   docker image rm hello-world
+   ```
+
+   * This fails if containers still exist from that image.
+
+2. **List all containers (even stopped ones):**
+
+   ```bash
+   docker container ls -a
+   ```
+
+   * Use `grep` to filter results:
+
+     ```bash
+     docker container ls -a | grep hello-world
+     ```
+
+3. **Remove containers by name or ID:**
+
+   ```bash
+   docker container rm <container_name_or_id>
+   ```
+
+   * Supports shorthand (e.g., first few characters of the ID).
+   * Remove multiple containers at once:
+
+     ```bash
+     docker container rm id1 id2 id3
+     ```
+
+4. **Bulk clean-up (optional):**
+
+   * Remove all stopped containers:
+
+     ```bash
+     docker container prune
+     ```
+   * Remove unused/dangling images:
+
+     ```bash
+     docker image prune
+     ```
+   * Remove most unused data:
+
+     ```bash
+     docker system prune
+     ```
+
+5. **Finally, remove the image:**
+
+   ```bash
+   docker image rm hello-world
+   ```
+
+6. **Re-download image without running it:**
+
+   ```bash
+   docker image pull hello-world
+   ```
+
+**Tip:** Avoid using force (`--force`) to remove images unless you know exactly what you're doing.
+
+## Container Port vs Host Port
+Application inside container runs in a isolate Docker network. We have to expose the container port to the host (e.g. your machine)
+- Port Binding: Bind the container's port to the host's port to make the service available to the localhost.
+When creating the container, use the flag [--publish] or [-p] to do the port binding.
+``` docker run -d -p <HOST_PORT>:<CONTAINER_PORT> <container>:<tag>```
+Note: It's common practice to use the same port number for both HOST_PORT and CONTAINER_PORT, especially for standard services (e.g., port 80 for HTTP), unless there's a specific need to map it differently.
+
 
 ### nginx
 it is basically a simple web server
@@ -9,18 +148,37 @@ it is basically a simple web server
 
 ### wordpress
 
-## Docker container
-
-
 ## Docker Registries
 Storage and distribution system of Docker images.
 Official images available and maintained by software authors or in collaboration with the Docker community.
 'Docker Hub' is one of the biggest Docker Registry hosted by Docker.
 
+
+
+
 ### commands
+docker container ls [-a] : list all contianers. Without -a flag it will only print running containers.
+docker ps : list running containers [shorter form of 'docker container ls']
 docker images : list all docker images locally
-docker ps : list running containers
 docker pull <name>:<tag> : pull an image from a registry
 docker run <name>:<tag> : creates a container from a given image and starts it
 docker run -d [--detach] <name>:<tag> : runs container in background and prints the container ID
 docker logs <container> : view logs from service running inside the container, which are present at the time of execution
+docker run -p [--publish] <HOST_PORT>:<CONTAINER_PORT> <name>:<tag> : publish a container's port to the host
+docker run --name <new_name> -p <HOST_PORT>:<CONTAINER_PORT> <name>:<tag> : publish a container's port to the host and give it a choosen name
+docker build -t [--tag] <name>:<tag> <location> : flag -t sets a name and optionally a tag in the image to be build
+
+| Command                                     | Explanation                                              | Shorthand / Notes                                      |
+|--------------------------------------------|----------------------------------------------------------|--------------------------------------------------------|
+| `docker image ls`                          | Lists all images                                         | `docker images`                                        |
+| `docker image rm <image>`                  | Removes an image                                         | `docker rmi`                                           |
+| `docker image pull <image>`                | Pulls image from a Docker registry                       | `docker pull`                                          |
+| `docker container ls -a`                   | Lists all containers (including stopped ones)            | `docker ps -a`                                         |
+| `docker container ls`                      | Lists only running containers                            | `docker ps`                                            |
+| `docker container run <image>`             | Runs a container from an image                           | `docker run`                                           |
+| `docker container run -d <image>`          | Runs a container in the background                       | `docker run --detach`                                  |
+| `docker container rm <container>`          | Removes a container                                      | `docker rm`                                            |
+| `docker container stop <container>`        | Stops a running container                                | `docker stop`                                          |
+| `docker container exec <container>`        | Executes a command inside the container                  | `docker exec`                                          |
+| `docker logs <container>`                  | Shows logs from a container                              | `docker logs`                                          |
+ 
