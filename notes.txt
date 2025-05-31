@@ -53,6 +53,25 @@ RUN <install some dependencies>
 
 CMD <command that is executed on `docker container run`> ```
 
+Dockerfile: ENTRYPOINT and CMD
+- Most of the time we can ignore ENTRYPOINT when building our images and only use CMD. For example, Ubuntu image defaults the ENTRYPOINT to sh so we do not have to worry about it. And it gives us the convenience of allowing us to overwrite the CMD easily, for example, with bash to go inside the container.
+- ENTRYPOINT defines what program runs when the container starts.
+	Defines the main executable that the container runs.
+	It cannot be replaced by arguments passed to docker run.
+- CMD defines the default arguments to that program.
+	If you don’t give any arguments in docker run, Docker uses CMD.
+	But if you do pass arguments, they will replace CMD.
+If there's no ENTRYPOINT, Docker uses its default ("/bin/sh -c").
+
+Example: in Dockerfile
+	ENTRYPOINT ["echo"]
+	CMD ["Hello, world!"]
+
+| Command                    | What Runs            | Output        |
+| -------------------------- | -------------------- | ------------- |
+| `docker run my-image`      | `echo Hello, world!` | Hello, world! |
+| `docker run my-image Bye!` | `echo Bye!`          | Bye!          |
+
 Key Points:
 - FROM: build this image from the specified image
 - RUN: execute any command in a shell inside the container environment
@@ -154,7 +173,9 @@ Official images available and maintained by software authors or in collaboration
 'Docker Hub' is one of the biggest Docker Registry hosted by Docker.
 
 
-
+### Copy a file from the container to the host machine
+docker diff <name>
+docker cp <"name:location_file_extention"> .
 
 ### commands
 docker container ls [-a] : list all contianers. Without -a flag it will only print running containers.
