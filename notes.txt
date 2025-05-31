@@ -43,8 +43,9 @@ Key Points:
 We need to create a 'definition' of how to build a image from our application. 
 [Dockerfile] builds a > [Docker Image] that runs as a > [Docker Container]
 
-### Dockerfile
+## Dockerfile
 Dockerfile is a file that is by default called Dockerfile. It is the instruction set for building an image.
+Reference: https://docs.docker.com/reference/dockerfile/
 Dockerfiles start from a parent image or 'base image' (```FROM <image>:<tag>```)
 
 ``` FROM <image>:<tag>
@@ -172,10 +173,23 @@ Storage and distribution system of Docker images.
 Official images available and maintained by software authors or in collaboration with the Docker community.
 'Docker Hub' is one of the biggest Docker Registry hosted by Docker.
 
-
 ### Copy a file from the container to the host machine
 docker diff <name>
 docker cp <"name:location_file_extention"> .
+
+## Docker volume
+A Docker volume is essentially a shared directory or file between the host machine and the container.
+When a program running inside the container modifies a file within this volume, the changes are preserved even after the container is shut down, as the file resides on the host machine. This is the primary advantage of using volumes; without them, any files created or modified within the container would be lost upon restarting it. Additionally, volumes facilitate file sharing between containers, enabling programs to access and load updated files seamlessly.
+
+### Allowing external connections into containers
+- Sending messages: Programs can send messages to URL(opens in a new tab) addresses: <protocol><IP or hostname>:<port>
+- Receiving messages: Programs can be assigned to listen to any available port. If a program is listening for traffic on port 3000, and a message is sent to that port, the program will receive and possibly process it.
+Opening a connection from the outside world to a Docker container happens in two steps:
+1. Exposing port (EXPOSE <port> in Dockerfile)
+2. Publishing port (run the container with -p <host-port>:<container-port>)
+Security reminder: dont open just any ports, defining the host-side port like this -p 127.0.0.1:3456:3000
+Binds the port only on the loopback interface (localhost), that means only your computer can access it via localhost:3456. No one else can connect, even on the same network
+
 
 ### commands
 docker container ls [-a] : list all contianers. Without -a flag it will only print running containers.
