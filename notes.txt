@@ -190,8 +190,8 @@ Opening a connection from the outside world to a Docker container happens in two
 Security reminder: dont open just any ports, defining the host-side port like this -p 127.0.0.1:3456:3000
 Binds the port only on the loopback interface (localhost), that means only your computer can access it via localhost:3456. No one else can connect, even on the same network
 
-
-### commands
+ 
+### Key Commands in Docker:
 docker container ls [-a] : list all contianers. Without -a flag it will only print running containers.
 docker ps : list running containers [shorter form of 'docker container ls']
 docker images : list all docker images locally
@@ -216,4 +216,27 @@ docker build -t [--tag] <name>:<tag> <location> : flag -t sets a name and option
 | `docker container stop <container>`        | Stops a running container                                | `docker stop`                                          |
 | `docker container exec <container>`        | Executes a command inside the container                  | `docker exec`                                          |
 | `docker logs <container>`                  | Shows logs from a container                              | `docker logs`                                          |
- 
+
+# Docker Compose
+
+Docker Compose is designed to simplify running multi-container applications using a single command docker compose [-f <arg>...] [options] [COMMAND] [ARGS...]
+It is a tool that defines and runs multi-container Docker applications using a single file called docker-compose.yml.
+Instead of running multiple docker build and docker run commands for each service (like frontend, backend, database, etc.), we can:
+- Define all services (e.g. frontend, backend, Redis, Postgres) in one YAML file.
+- Set environment variables, ports, volumes, and build instructions.
+- Start all services at once with one command: 'docker compose up'
+
+[!] Both .yml and .yaml are valid extensions for Docker Compose files — Docker accepts either, but .yml is more commonly used.
+
+### Key Commands in Docker Compose:
+docker-compose up : builds (if needed) and runs all services
+docker-compose down : stops and removes containers, networks, etc
+docker-compose build : only builds the images, no running
+docker compose logs : monitor the output of the running containers and debug issues
+docker compose ps : lists all the services along with their current status
+
+for more commands : https://docs.docker.com/reference/cli/docker/compose/
+
+## Volumes in Docker Compose
+Volumes in Docker Compose are defined with the following syntax location-in-host:location-in-container. Compose can work without an absolute path.
+
