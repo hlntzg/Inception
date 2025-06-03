@@ -234,9 +234,14 @@ docker-compose down : stops and removes containers, networks, etc
 docker-compose build : only builds the images, no running
 docker compose logs : monitor the output of the running containers and debug issues
 docker compose ps : lists all the services along with their current status
-
+docker compose port : find out which ports the instances are bound to
 for more commands : https://docs.docker.com/reference/cli/docker/compose/
 
 ## Volumes in Docker Compose
 Volumes in Docker Compose are defined with the following syntax location-in-host:location-in-container. Compose can work without an absolute path.
 
+## Docker networking
+When connecting two services like a server and its database in Docker using Docker Compose, both containers are automatically placed on a shared network created by Compose. Each service can communicate with the other using the service name defined in the docker-compose.yml file, which acts as a DNS name within the network. This means containers can reference each other by these service names, not by the actual container names. This setup enables seamless, internal communication between services without needing to know IP addresses or expose ports externally, unless required for outside access.
+Services are configured to use a network by adding networks into the definition of the service (on docker-compose.yml file)
+
+## Volume-in-Action
