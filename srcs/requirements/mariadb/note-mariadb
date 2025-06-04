@@ -1,0 +1,2 @@
+docker compose up -d --build mariadb
+docker exec -it srcs-mariadb-1 mariadb -u wpuser -p -h localhost
