@@ -1,34 +1,32 @@
-# Define Alpine as a base image for building mariadb as a lightweight container
+# Use required Alpine penultimate stable version
+# https://alpinelinux.org/releases/
 FROM alpine:3.21.3
 
-# Set image metadata for maintainership and description
+# Metadata
 LABEL maintainer="hutzig@student.hive.fi"
-LABEL description="MariaDB container built from scratch using Alpine"
+LABEL description="MariaDB image with Tini, proper init and security"
 
-# Update package index and install MariaDB packages, Bash shell, and Tini init system in a new layer on top of the current image
-RUN apk update && apk add --no-cache mariadb mariadb-client bash tini
+# Install mariadb, client, tini, bash for debugging
+RUN apk update && \
+    apk add --no-cache mariadb mariadb-client tini bash
 
-# Create directories for MariaDB runtime and set correct ownership to mysql user
-RUN mkdir -p /run/mysqld && \
+# Prepare directories and permissions
+RUN mkdir -p /run/mysqld /var/lib/mysql /etc/mysql && \
     chown -R mysql:mysql /run/mysqld /var/lib/mysql
 
-# Create directory for custom MariaDB configuration files
-RUN mkdir -p /etc/mysql
+# Copy custom config file
+COPY ./conf/my-mariadb.cnf /etc/my-mariadb.cnf
 
-# Copy custom MariaDB configuration file into the container
-COPY ./conf/my.cnf /etc/my.cnf
+# Set permissions on config
+RUN chmod 644 /etc/my.cnf
 
-# Copy initialization scripts and SQL seed files to the MariaDB entrypoint directory
-# These scripts will be executed on container startup if present
-COPY ./conf/ /docker-entrypoint-initdb.d/
+# Copy entrypoint script
+COPY ./tools/mariadb-script.sh /usr/local/bin/mariadb-script.sh
+RUN chmod +x /usr/local/bin/mariadb-script.sh
 
-# Copy script and set executable permissions
-COPY ./tools/mariadb-script.sh /tmp/mariadb-script.sh
-RUN chmod 700 /tmp/mariadb-script.sh
-
-# Expose MariaDB default port: service will be listening on port 3306
+# Expose MariaDB default port
 EXPOSE 3306
 
-# Use Tini as the init system and set the entrypoint to the custom startup script
-# Entrypoint to ensure the container always run the custom MariaDB startup script
-ENTRYPOINT ["/sbin/tini", "--", "/tmp/mariadb-script.sh"]
+# Use Tini and your script
+ENTRYPOINT ["/sbin/tini", "--", "/usr/local/bin/mariadb-script.sh"]
+

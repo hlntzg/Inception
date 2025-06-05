@@ -1,24 +1,20 @@
+# Use required Alpine penultimate stable version
+# https://alpinelinux.org/releases/
 FROM alpine:3.21.3
 
-RUN apk update && apk add --no-cache nginx openssl bash tini
+RUN apk update && apk add --no-cache nginx openssl tini bash
 
-# Required directories for socket and certificates
-RUN mkdir -p /run/nginx /etc/nginx/ssl
+# Create needed directories
+RUN mkdir -p /run/nginx /etc/nginx/ssl /var/log/nginx
 
-# Self-signed SSL certificate
-# out: path ; keyout: ; subj: ;
-RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-  -out /etc/nginx/ssl/nginx_public_certificate.crt \
-  -keyout /etc/nginx/ssl/nginx.key \
-  -subj "/C=FI/ST=Uusimaa/L=Helsinki/O=42Inception/CN=hutzig.42.fr"
+# Copy configs
+COPY ./conf/nginx.conf /etc/nginx/nginx.conf
+COPY ./conf/default.conf.template /etc/nginx/http.d/default.conf.template
 
-# Lock down permissions on the private key
-RUN chmod 600 /etc/nginx/ssl/nginx.key
+COPY ./tools/entrypoint.sh /usr/local/bin/entrypoint.sh
 
-COPY ./conf/nginx.conf /etc/nginx/conf.d/default.conf
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 443
 
-ENTRYPOINT ["/sbin/tini", "--"]
-
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["/sbin/tini", "--", "/usr/local/bin/entrypoint.sh"]
