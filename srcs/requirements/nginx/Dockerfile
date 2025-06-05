@@ -1,20 +1,21 @@
-# Use required Alpine penultimate stable version
+# Base image required Alpine penultimate stable version
 # https://alpinelinux.org/releases/
 FROM alpine:3.21.3
 
-RUN apk update && apk add --no-cache nginx openssl tini bash
+RUN apk update && \
+    apk add nginx openssl bash sed
 
-# Create needed directories
-RUN mkdir -p /run/nginx /etc/nginx/ssl /var/log/nginx
+# Copy entrypoint script
+COPY ./tools/nginx-entrypoint.sh /usr/local/bin/nginx-entrypoint.sh
 
-# Copy configs
-COPY ./conf/nginx.conf /etc/nginx/nginx.conf
-COPY ./conf/default.conf.template /etc/nginx/http.d/default.conf.template
+# Copy NGINX config template
+COPY ./tools/default.conf.template /etc/nginx/http.d/default.conf.template
 
-COPY ./tools/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN mkdir -p /etc/nginx/ssl && \
+	mkdir -p /run/nginx /var/log/nginx && \
+	chmod +x /usr/local/bin/nginx-entrypoint.sh
 
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
+# Expose HTTPS port
 EXPOSE 443
 
-ENTRYPOINT ["/sbin/tini", "--", "/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/nginx-entrypoint.sh"]

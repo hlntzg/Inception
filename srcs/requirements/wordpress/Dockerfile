@@ -24,8 +24,8 @@ RUN mkdir -p /var/www/html /run/php && \
 RUN ln -s /usr/bin/php81 /usr/bin/php
 
 # Copy entrypoint
-COPY ./tools/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+COPY ./tools/wordpress-entrypoint.sh /usr/local/bin/wordpress-entrypoint.sh
+RUN chmod +x /usr/local/bin/wordpress-entrypoint.sh
 
 WORKDIR /var/www/html
 
@@ -33,4 +33,4 @@ EXPOSE 9000
 
 USER default_user
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/wordpress-entrypoint.sh"]
