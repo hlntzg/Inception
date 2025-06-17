@@ -202,7 +202,7 @@ docker logs <container> : view logs from service running inside the container, w
 docker run -p [--publish] <HOST_PORT>:<CONTAINER_PORT> <name>:<tag> : publish a container's port to the host
 docker run --name <new_name> -p <HOST_PORT>:<CONTAINER_PORT> <name>:<tag> : publish a container's port to the host and give it a choosen name
 docker build -t [--tag] <name>:<tag> <location> : flag -t sets a name and optionally a tag in the image to be build
-
+docker volume ls : see volume
 | Command                                     | Explanation                                              | Shorthand / Notes                                      |
 |--------------------------------------------|----------------------------------------------------------|--------------------------------------------------------|
 | `docker image ls`                          | Lists all images                                         | `docker images`                                        |

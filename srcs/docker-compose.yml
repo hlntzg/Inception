@@ -9,7 +9,7 @@ services:
       - CERTS_KEY_=${CERTS_KEY_}
 	env_file: .env
     build:
-      image: ngnix
+#      image: ngnix
       context: ./requirements/nginx
       dockerfile: Dockerfile
     depends_on:
@@ -39,7 +39,7 @@ services:
       - WP_USER_EMAIL=${WP_USER_EMAIL}
 	env_file: .env
     build:
-      image: wordpress
+#      image: wordpress
       context: ./requirements/wordpress
       dockerfile: Dockerfile
     depends_on:
@@ -60,7 +60,7 @@ services:
       - DB_HOST=${DB_HOST}
 	env_file: .env
     build:
-      image: mariadb
+#      image: mariadb
       context: ./requirements/mariadb
       dockerfile: Dockerfile
     volumes:
