@@ -9,8 +9,8 @@ RED    := \033[1;31m
 DOCKER_COMPOSE_FILE := ./srcs/docker-compose.yml
 #DOCKER_COMPOSE := docker-compose -f $(DOCKER_COMPOSE_FILE) --env-file ./srcs/.env
 DATA_DIR := $(HOME)/data
-MARIADB_DIR := $(DATA_DIR)/mariadb
-WORDPRESS_DIR := $(DATA_DIR)/wordpress
+DB_DIR := $(DATA_DIR)/mariadb
+WP_DIR := $(DATA_DIR)/wordpress
 
 # Detect docker compose command
 ifeq (, $(shell which docker-compose))
@@ -35,7 +35,7 @@ up: check build_dirs
 
 build_dirs:
 	echo "$(BLUE)Creating data volumes...$(RESET)"
-	mkdir -p $(MARIADB_DIR) $(WORDPRESS_DIR)
+	mkdir -p $(DB_DIR) $(WP_DIR)
 
 down:
 	echo "$(RED)Stopping containers...$(RESET)"

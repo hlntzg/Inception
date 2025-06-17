@@ -1,15 +1,18 @@
 Inception - diving into Docker-based infrastructure and system administration
+
 Objective:
-	- build a containerized infrastructure on a virtual machine using only Docker Compose and Dockerfiles.
+- build a containerized infrastructure on a virtual machine using only Docker Compose and Dockerfiles.
+
 
 Required Containers:
-	- nginx: Reverse proxy with TLS 1.2/1.3 (entrypoint via port 443)
-	- wordpress: WordPress + PHP-FPM (no NGINX)
-	- mariadb: MariaDB DB backend (no NGINX)
+- nginx: Reverse proxy with TLS 1.2/1.3 (entrypoint via port 443)
+- wordpress: WordPress + PHP-FPM (no NGINX)
+- mariadb: MariaDB DB backend (no NGINX)
+
 
 Required Volumes:
-	- One volume for WordPress database data (MariaDB)
-	- One volume for WordPress website files
+- One volume for WordPress database data (MariaDB)
+- One volume for WordPress website files
 
 Infrastructure Rules:
 	- Built on Alpine or Debian (penultimate stable version)
@@ -32,7 +35,7 @@ inception/
             ├── Dockerfile
 
 Makefile: 
-```all:
+all:
 	docker-compose -f srcs/docker-compose.yml --env-file srcs/.env up --build -d
 
 down:
@@ -41,5 +44,4 @@ down:
 fclean: down
 	docker system prune -af --volumes
 
-re: fclean all```
-
+re: fclean all
