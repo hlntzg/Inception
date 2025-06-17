@@ -27,9 +27,6 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
     chmod +x wp-cli.phar && \
     mv wp-cli.phar /usr/local/bin/wp
 
-# Link PHP binary: create a symbolic link so that running the php command will actually execute php83
-RUN ln -s /usr/bin/php83 /usr/bin/php
-
 # Copy custom PHP-FPM configuration
 COPY ./conf/www.conf /etc/php83/php-fpm.d/www.conf
 
