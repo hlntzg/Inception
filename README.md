@@ -15,12 +15,12 @@ Required Volumes:
 - One volume for WordPress website files
 
 Infrastructure Rules:
-	- Built on Alpine or Debian (penultimate stable version)
-	- Environment variables (stored in a .env file inside srcs/)
-	- Makefile to build and start everything via docker-compose
-	- Domain name is login.42.fr (login is replace login with your own)
+- Built on Alpine or Debian (penultimate stable version)
+- Environment variables (stored in a .env file inside srcs/)
+- Makefile to build and start everything via docker-compose
+- Domain name is login.42.fr
 
-
+```
 inception/
 ├── Makefile
 └── srcs/
@@ -33,15 +33,3 @@ inception/
         │   ├── Dockerfile
         └── nginx/
             ├── Dockerfile
-
-Makefile: 
-all:
-	docker-compose -f srcs/docker-compose.yml --env-file srcs/.env up --build -d
-
-down:
-	docker-compose -f srcs/docker-compose.yml down
-
-fclean: down
-	docker system prune -af --volumes
-
-re: fclean all
