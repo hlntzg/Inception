@@ -1,36 +1,44 @@
-# Use required Alpine penultimate stable version
-# https://alpinelinux.org/releases/
+# Use required Alpine Linux penultimate stable version
+# Reference: https://alpinelinux.org/releases/
 FROM alpine:3.21.3
 
-# Install PHP 8.3 and extensions for WordPress
+# Install dependencies and PHP 8.3 with required extensions
 RUN apk update && apk add --no-cache \
-    php83 php83-fpm php83-mysqli php83-mbstring php83-phar php83-tokenizer php83-json php83-session \
-    mariadb-client \
-    curl wget bash \
-    && rm -rf /var/cache/apk/*
+    bash curl wget mariadb-client \
+    php83 php83-fpm php83-mysqli php83-json php83-mbstring php83-phar \
+    php83-tokenizer php83-session php83-openssl php83-curl php83-xml php83-dom && \
+	
+	# Create user and group for running WordPress
+	addgroup -S www-data && adduser -S -G www-data www-data && \
 
-# WP-CLI install
-RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
-    chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp
+    # Create web root directories with proper permissions and ownership
+    mkdir -p /var/www/html /run/php && \
+    chown -R www-data:www-data /var/www/html && \
+    chmod -R 755 /var/www/html && \
 
-# Configure PHP-FPM to listen on all interfaces (not just localhost)
-COPY ./conf/www.conf /etc/php83/php-fpm.d/www.conf
+    # Clean up APK cache
+    rm -rf /var/cache/apk/*
 
-# Create working directories
-RUN mkdir -p /var/www/html /run/php && \
-    chown -R nobody:nogroup /var/www/html
-
-# Optional: link php binary for easier command usage
-RUN ln -s /usr/bin/php83 /usr/bin/php
-
-# Copy entrypoint
-COPY ./tools/wordpress-entrypoint.sh /usr/local/bin/wordpress-entrypoint.sh
-RUN chmod +x /usr/local/bin/wordpress-entrypoint.sh
-
+# Set working directory
 WORKDIR /var/www/html
 
+# Install wp-cli (WordPress CLI tool)
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+    chmod +x wp-cli.phar && \
+    mv wp-cli.phar /usr/local/bin/wp
+
+# Link PHP binary: create a symbolic link so that running the php command will actually execute php83
+RUN ln -s /usr/bin/php83 /usr/bin/php
+
+# Copy custom PHP-FPM configuration
+COPY ./conf/www.conf /etc/php83/php-fpm.d/www.conf
+
+# Copy entrypoint script and set executable
+COPY ./tools/wordpress-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/wordpress-entrypoint.sh
+
+# Expose PHP-FPM port (used by NGINX)
 EXPOSE 9000
 
-USER default_user
-
+# Use the custom entrypoint script to initialize the container
 ENTRYPOINT ["/usr/local/bin/wordpress-entrypoint.sh"]
