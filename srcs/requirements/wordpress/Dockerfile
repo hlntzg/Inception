@@ -9,7 +9,9 @@ RUN apk update && apk add --no-cache \
     php83-tokenizer php83-session php83-openssl php83-curl php83-xml php83-dom && \
 	
 	# Create user and group for running WordPress
-	addgroup -S www-data && adduser -S -G www-data www-data && \
+	# addgroup -S www-data && adduser -S -G www-data www-data && \  # Since the www-data user and group already exist in Alpine (especially when installing php-fpm), you may be able to just remove that line entirely if it's not critical to redefine them.
+	addgroup -S www-data || true && \
+	adduser -S -G www-data www-data || true && \
 
     # Create web root directories with proper permissions and ownership
     mkdir -p /var/www/html /run/php && \

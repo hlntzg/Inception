@@ -4,7 +4,7 @@ FROM alpine:3.21.3
 
 # Install mariadb, client bash (for scripting support)
 RUN apk update && apk add --no-cache \
-	mariadb mariadb-client bash \
+	mariadb mariadb-client bash
 
 # Copy custom config file
 COPY ./conf/mariadb.cnf /etc/my.cnf

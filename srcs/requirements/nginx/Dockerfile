@@ -9,7 +9,7 @@ RUN apk update && \
 COPY ./tools/nginx-entrypoint.sh /usr/local/bin/nginx-entrypoint.sh
 
 # Copy NGINX config template
-COPY ./tools/default.conf.template /etc/nginx/http.d/default.conf.template
+COPY ./conf/default.conf.template /etc/nginx/http.d/default.conf.template
 
 RUN mkdir -p /etc/nginx/ssl && \
 	mkdir -p /run/nginx /var/log/nginx && \
