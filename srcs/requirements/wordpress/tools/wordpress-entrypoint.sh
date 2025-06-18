@@ -12,10 +12,10 @@ env | grep -E '^(WP_|DB_|DOMAIN_NAME)'
 : "${WP_ADMIN_USER:?Missing WP_ADMIN_USER}"
 : "${WP_ADMIN_PWD:?Missing WP_ADMIN_PWD}"
 : "${WP_ADMIN_EMAIL:?Missing WP_ADMIN_EMAIL}"
-: "${WP_DB_NAME:?Missing WP_DB_NAME}"
-: "${WP_DB_USER:?Missing WP_DB_USER}"
-: "${WP_DB_PWD:?Missing WP_DB_PWD}"
-: "${WP_DB_HOST:?Missing WP_DB_HOST}"
+: "${DB_NAME:?Missing DB_NAME}"
+: "${DB_USER:?Missing DB_USER}"
+: "${DB_USER_PWD:?Missing DB_USER_PWD}"
+: "${DB_HOST:?Missing DB_HOST}"
 : "${DOMAIN_NAME:?Missing DOMAIN_NAME}"
 
 # Optional extra user vars (commented for now, not sure if needed)
@@ -25,7 +25,7 @@ env | grep -E '^(WP_|DB_|DOMAIN_NAME)'
 
 # Wait for DB to be ready
 echo "Waiting for MariaDB to be ready..."
-until mysql -h"${WP_DB_HOST}" -u"${WP_DB_USER}" -p"${WP_DB_PWD}" -e "SELECT 1;" > /dev/null 2>&1; do
+until mysql -h"${DB_HOST}" -u"${DB_USER}" -p"${DB_USER_PWD}" -e "SELECT 1;" > /dev/null 2>&1; do
   echo "Still waiting for MariaDB..."
   sleep 1
 done
@@ -43,10 +43,10 @@ if [ ! -f "${MARKER}" ]; then
 
     echo "Creating wp-config.php..."
     wp config create \
-      --dbname="${WP_DB_NAME}" \
-      --dbuser="${WP_DB_USER}" \
-      --dbpass="${WP_DB_PWD}" \
-      --dbhost="${WP_DB_HOST}" \
+      --dbname="${DB_NAME}" \
+      --dbuser="${DB_USER}" \
+      --dbpass="${DB_USER_PWD}" \
+      --dbhost="${DB_HOST}" \
       --allow-root
 
     echo "Installing WordPress..."

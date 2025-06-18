@@ -31,7 +31,7 @@ services:
       - DB_USER=${DB_USER}
       - DB_USER_PWD=${DB_USER_PWD}
       - WP_TITLE=${WP_TITLE}
-      - WP_ADMIN=${WP_ADMIN}
+      - WP_ADMIN_USER=${WP_ADMIN_USER}
       - WP_ADMIN_PWD=${WP_ADMIN_PWD}
       - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
       - WP_USER=${WP_USER}
