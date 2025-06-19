@@ -7,7 +7,6 @@ RED    := \033[1;31m
 
 # CONFIG
 DOCKER_COMPOSE_FILE := ./srcs/docker-compose.yml
-#DOCKER_COMPOSE := docker-compose -f $(DOCKER_COMPOSE_FILE) --env-file ./srcs/.env
 DATA_DIR := $(HOME)/data
 DB_DIR := $(DATA_DIR)/mariadb
 WP_DIR := $(DATA_DIR)/wordpress
@@ -29,40 +28,44 @@ check:
 	@command -v docker-compose >/dev/null 2>&1 || command -v docker >/dev/null 2>&1 || { echo "$(RED)Error: Docker Compose is not installed.$(RESET)"; exit 1; }
 
 up: check build_dirs
-	echo "$(YELLOW)Building and starting containers...$(RESET)"
+	echo -e "$(YELLOW)Building and starting containers...$(RESET)"
 	$(DOCKER_COMPOSE) up --build -d
-	echo "$(GREEN)All services are up and running.$(RESET)"
+	echo -e "$(GREEN)All services are up and running.$(RESET)"
 
 build_dirs:
-	echo "$(BLUE)Creating data volumes...$(RESET)"
+	echo -e "$(BLUE)Creating data volumes...$(RESET)"
 	mkdir -p $(DB_DIR) $(WP_DIR)
 
 down:
-	echo "$(RED)Stopping containers...$(RESET)"
+	echo -e "$(RED)Stopping containers...$(RESET)"
 	$(DOCKER_COMPOSE) down
 
 ps:
-	echo "$(BLUE)Listing container status...$(RESET)"
+	echo -e "$(BLUE)Listing container status...$(RESET)"
 	$(DOCKER_COMPOSE) ps
 
 logs:
-	echo "$(BLUE)Streaming container logs...$(RESET)" 
-	echo "$(BLUE)Press Ctrl+C to exit$(RESET)"
+	echo -e "$(BLUE)Streaming container logs...$(RESET)" 
+	echo -e "$(BLUE)Press Ctrl+C to exit$(RESET)"
 	$(DOCKER_COMPOSE) logs -f
 
 clean: down
-	echo "Removing data directories in $(DATA_DIR)..."
+	echo -e "$(RED)Removing data directories in $(DATA_DIR)...$(RESET)"
 	if [ -d $(DATA_DIR) ]; then \
 		rm -rf $(DATA_DIR); \
-		echo "Removed $(DATA_DIR)"; \
+		echo -e "$(GREEN)Removed $(DATA_DIR)$(RESET)"; \
 	else \
-		echo "$(DATA_DIR) does not exist. Skipping removal."; \
+		echo -e "$(RED)$(DATA_DIR) does not exist. Skipping removal.$(RESER)"; \
 	fi
 
 fclean: clean
-	echo "$(RED)Removing all Docker data and local volumes...$(RESET)"
-	docker-compose down -v --rmi all
-	echo "$(GREEN)All docker images, volumes, and networks have been removed.$(RESET)"
+	echo -e "$(RED)Removing all Docker data and local volumes...$(RESET)"
+	ifeq (, $(shell which docker-compose))
+		docker compose $(DOCKER_COMPOSE_FILE) down -v --rmi all
+	else
+		docker-compose $(DOCKER_COMPOSE_FILE) down -v --rmi all
+	endif
+	echo -e "$(GREEN)All docker images, volumes, and networks have been removed.$(RESET)"
 
 re: fclean all
 

@@ -54,8 +54,9 @@ services:
     restart: always
     environment:
       - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_NAME}
+      - DB_USER=${DB_USER}
       - DB_USER_PWD=${DB_USER_PWD}
+      - DB_ROOT_USER=${DB_ROOT_USER}
       - DB_ROOT_PWD=${DB_ROOT_PWD}
       - DB_HOST=${DB_HOST}
     env_file: ./.env   # Only needed if running docker-compose directly

@@ -13,8 +13,8 @@ COPY ./conf/mariadb.cnf /etc/my.cnf
 RUN chmod 644 /etc/my.cnf
 
 # Prepare directories and permissions
-RUN mkdir -p /run/mysqld /var/lib/mysql /etc/mysql && \
-    chown -R mysql:mysql /run/mysqld /var/lib/mysql
+RUN mkdir -p /run/mysqld /var/lib/mysql /etc/mysql /var/log/mysql && \
+    chown -R mysql:mysql /run/mysqld /var/lib/mysql /var/log/mysql
 
 # Copy entrypoint script for initialization
 COPY ./tools/mariadb-entrypoint.sh /usr/local/bin/mariadb-entrypoint.sh
