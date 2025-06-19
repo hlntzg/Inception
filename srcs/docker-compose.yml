@@ -18,7 +18,7 @@ services:
     ports:
       - "443:443"
     volumes:
-      - wordpress_files:/var/www/html
+      - wordpress_files:/var/www/html:ro # Nginx just needs read-only access to WordPress files
     networks:
       - inception
   
@@ -45,7 +45,7 @@ services:
     depends_on:
       - mariadb
     volumes:
-      - wordpress_files:/var/www/html
+      - ./data/wordpress_files:/var/www/html
     networks:
       - inception
 

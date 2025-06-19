@@ -24,20 +24,36 @@ env | grep -E '^(WP_|DB_|DOMAIN_NAME)'
 # WP_USER_PASSWORD=${WP_USER_PASSWORD:-}
 
 # Wait for DB to be ready
-echo "Waiting for MariaDB to be ready..."
-until mysql -h"${DB_HOST}" -u"${DB_USER}" -p"${DB_USER_PWD}" -e "SELECT 1;" > /dev/null 2>&1; do
-  echo "Still waiting for MariaDB..."
-  sleep 1
-done
+#echo "Waiting for MariaDB to be ready..."
+#until mysql -h"${DB_HOST}" -u"${DB_USER}" -p"${DB_USER_PWD}" -e "SELECT 1;" > /dev/null 2>&1; do
+#  echo "Still waiting for MariaDB..."
+#  sleep 1
+#done
+#echo "MariaDB is up."
+
+# Wait for MariaDB to be ready
+echo "Waiting for MariaDB to be ready using mariadb-admin ping..."
+if ! mariadb-admin ping \
+  --protocol=tcp \
+  --host="$DB_HOST" \
+  --user="$DB_USER" \
+  --password="$DB_USER_PWD" \
+  --connect-timeout=30 \
+  #--wait \
+  >/dev/null 2>&1; then
+  echo "MariaDB did not become ready in time. Exiting."
+  exit 1
+fi
 echo "MariaDB is up."
 
+
 # Ensure idempotent WP startup
-MARKER=".initialized"
+MARKER="/var/www/html/.initialized"
 
 if [ ! -f "${MARKER}" ]; then
   echo "First time setup in progress..."
 
-  if [ ! -f wp-config.php ]; then
+  if [ ! -f /var/www/html/wp-config.php ]; then
     echo "Downloading WordPress core..."
     wp core download --allow-root
 

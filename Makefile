@@ -52,7 +52,7 @@ logs:
 clean: down
 	echo -e "$(RED)Removing data directories in $(DATA_DIR)...$(RESET)"
 	if [ -d $(DATA_DIR) ]; then \
-		rm -rf $(DATA_DIR); \
+		sudo rm -rf $(DATA_DIR); \
 		echo -e "$(GREEN)Removed $(DATA_DIR)$(RESET)"; \
 	else \
 		echo -e "$(RED)$(DATA_DIR) does not exist. Skipping removal.$(RESER)"; \
@@ -60,11 +60,12 @@ clean: down
 
 fclean: clean
 	echo -e "$(RED)Removing all Docker data and local volumes...$(RESET)"
-	ifeq (, $(shell which docker-compose))
-		docker compose $(DOCKER_COMPOSE_FILE) down -v --rmi all
-	else
-		docker-compose $(DOCKER_COMPOSE_FILE) down -v --rmi all
-	endif
+	$(DOCKER_COMPOSE) down -v --rmi all
+	#ifeq (, $(shell which docker-compose))
+	#	docker compose $(DOCKER_COMPOSE_FILE) down -v --rmi all
+	#else
+	#	docker-compose $(DOCKER_COMPOSE_FILE) down -v --rmi all
+	#endif
 	echo -e "$(GREEN)All docker images, volumes, and networks have been removed.$(RESET)"
 
 re: fclean all
