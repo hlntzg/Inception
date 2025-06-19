@@ -26,7 +26,7 @@ fi
 #    timeout=$((timeout - 1))
 #    if [ "$timeout" -le 0 ]; then
 #        echo "MariaDB failed to start within timeout."
-#        kill "$pid"
+#        kill "$pid" 
 #        exit 1
 #    fi
 #done

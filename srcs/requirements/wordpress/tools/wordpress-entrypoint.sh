@@ -38,27 +38,29 @@ if ! mariadb-admin ping \
   --host="$DB_HOST" \
   --user="$DB_USER" \
   --password="$DB_USER_PWD" \
-  --connect-timeout=30 \
-  #--wait \
+  #--connect-timeout=60 \
+  --wait \
   >/dev/null 2>&1; then
   echo "MariaDB did not become ready in time. Exiting."
-  exit 1
+  #exit 1
 fi
 echo "MariaDB is up."
 
+# Change to the WordPress document root
+cd /var/www/html
 
 # Ensure idempotent WP startup
-MARKER="/var/www/html/.initialized"
+MARKER=".initialized"
 
 if [ ! -f "${MARKER}" ]; then
   echo "First time setup in progress..."
 
-  if [ ! -f /var/www/html/wp-config.php ]; then
+  if [ ! -f wp-config.php ]; then
     echo "Downloading WordPress core..."
-    wp core download --allow-root
+    ./wp-cli.phar core download --allow-root || true
 
     echo "Creating wp-config.php..."
-    wp config create \
+    ./wp-cli.phar config create \
       --dbname="${DB_NAME}" \
       --dbuser="${DB_USER}" \
       --dbpass="${DB_USER_PWD}" \
@@ -66,7 +68,7 @@ if [ ! -f "${MARKER}" ]; then
       --allow-root
 
     echo "Installing WordPress..."
-    wp core install \
+    ./wp-cli.phar core install \
       --url="${DOMAIN_NAME}" \
       --title="${WP_TITLE}" \
       --admin_user="${WP_ADMIN_USER}" \

@@ -1,15 +1,69 @@
 services:
-  
+  mariadb:
+    container_name: mariadb
+    image: mariadb:hutzig
+    restart: always
+    environment:
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_USER_PWD=${DB_USER_PWD}
+      - DB_ROOT_USER=${DB_ROOT_USER}
+      - DB_ROOT_PWD=${DB_ROOT_PWD}
+      - DB_HOST=${DB_HOST}
+    #env_file: ./.env   # Only needed if running docker-compose directly
+    build:
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+    volumes:
+      - wordpress_db:/var/lib/mysql
+    networks:
+      - inception
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+
+  wordpress:
+    container_name: wordpress
+    image: wordpress:hutzig
+    restart: always
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_USER_PWD=${DB_USER_PWD}
+      - DB_HOST=${DB_HOST}
+      - WP_TITLE=${WP_TITLE}
+      - WP_ADMIN_USER=${WP_ADMIN_USER}
+      - WP_ADMIN_PWD=${WP_ADMIN_PWD}
+      - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
+      - WP_USER=${WP_USER}
+      - WP_USER_PWD=${WP_USER_PWD}
+      - WP_USER_EMAIL=${WP_USER_EMAIL}
+    #env_file: ./.env   # Only needed if running docker-compose directly
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    volumes:
+      - wordpress_files:/var/www/html
+    networks:
+      - inception
+
   nginx:
     container_name: nginx
+    image: nginx:hutzig
     restart: always
     environment:
       - DOMAIN_NAME=${DOMAIN_NAME}
       - CERTS_=${CERTS_}
       - CERTS_KEY_=${CERTS_KEY_}
-    env_file: ./.env   # Only needed if running docker-compose directly
+    #env_file: ./.env   # Only needed if running docker-compose directly
     build:
-#      image: ngnix
       context: ./requirements/nginx
       dockerfile: Dockerfile
     depends_on:
@@ -22,55 +76,7 @@ services:
     networks:
       - inception
   
-  wordpress:
-    container_name: wordpress
-    restart: always
-    environment:
-      - DOMAIN_NAME=${DOMAIN_NAME}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_USER_PWD=${DB_USER_PWD}
-      - WP_TITLE=${WP_TITLE}
-      - WP_ADMIN_USER=${WP_ADMIN_USER}
-      - WP_ADMIN_PWD=${WP_ADMIN_PWD}
-      - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
-      - WP_USER=${WP_USER}
-      - WP_USER_PWD=${WP_USER_PWD}
-      - WP_USER_EMAIL=${WP_USER_EMAIL}
-    env_file: ./.env   # Only needed if running docker-compose directly
-    build:
-#      image: wordpress
-      context: ./requirements/wordpress
-      dockerfile: Dockerfile
-    depends_on:
-      - mariadb
-    volumes:
-      - ./data/wordpress_files:/var/www/html
-    networks:
-      - inception
-
-  mariadb:
-    container_name: mariadb
-    restart: always
-    environment:
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_USER_PWD=${DB_USER_PWD}
-      - DB_ROOT_USER=${DB_ROOT_USER}
-      - DB_ROOT_PWD=${DB_ROOT_PWD}
-      - DB_HOST=${DB_HOST}
-    env_file: ./.env   # Only needed if running docker-compose directly
-    build:
-#      image: mariadb
-      context: ./requirements/mariadb
-      dockerfile: Dockerfile
-    volumes:
-      - wordpress_db:/var/lib/mysql
-    networks:
-      - inception
-
 volumes:
-
   wordpress_files:
     driver: local
     driver_opts:
@@ -86,7 +92,6 @@ volumes:
       device: ${HOME}/data/mariadb
 
 networks:
-
   inception:
     name: inception
     driver: bridge

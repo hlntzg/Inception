@@ -26,8 +26,7 @@ WORKDIR /var/www/html
 
 # Install wp-cli (WordPress CLI tool)
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
-    chmod +x wp-cli.phar && \
-    mv wp-cli.phar /usr/local/bin/wp
+    chmod +x wp-cli.phar
 
 # Copy custom PHP-FPM configuration
 COPY ./conf/www.conf /etc/php83/php-fpm.d/www.conf
@@ -35,6 +34,11 @@ COPY ./conf/www.conf /etc/php83/php-fpm.d/www.conf
 # Copy entrypoint script and set executable
 COPY ./tools/wordpress-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/wordpress-entrypoint.sh
+
+# Increase PHP memory limit to 512M by modifying php.ini or appending if missing
+RUN chmod +x /usr/local/bin/entrypoint.sh && \
+    sed -i '/^memory_limit\s*=/c\memory_limit = 512M' /etc/php83/php.ini || \
+    echo "memory_limit = 512M" >> /etc/php83/php.ini
 
 # Expose PHP-FPM port (used by NGINX)
 EXPOSE 9000
