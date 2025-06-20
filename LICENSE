@@ -1,0 +1,50 @@
+Educational Use License for Hive Helsinki Projects
+Copyright (c) 2025 Helena Utzig
+
+This project is provided free of charge for educational use during core studies 
+at Hive Helsinki (<https://www.hive.fi>), a programming school that is part of 
+the 42 Network (<https://www.42network.org>).
+
+By using, modifying, or distributing this code, you agree to the following terms:
+
+1. Non-Commercial Use  
+   This software is intended solely for educational purposes. You may not use 
+   this software or any derivative works for commercial purposes without 
+   explicit written permission from the original author(s).
+
+2. Attribution  
+   You must provide clear attribution to the original author(s) and to Hive 
+   Helsinki when using or sharing this code. This includes forks, copies, 
+   modifications, and any public redistribution. This license must be included 
+   with any redistributed or derived work.
+
+3. No Warranty  
+   This software is provided "as is" without any warranties, express or implied. 
+   The author(s) disclaim all liability for damages or losses arising from its 
+   use.
+
+4. Academic Integrity  
+   You may not submit this code as your own work for evaluation in any academic 
+   setting. Plagiarism or academic dishonesty violates the principles of Hive 
+   Helsinki and the 42 Network.
+
+5. Modification & Sharing  
+   You are free to copy, modify, compile, or share this software — in source or 
+   binary form — for personal learning or academic collaboration, as long as the 
+   above terms are respected.
+
+6. Intellectual Property of the 42 Network  
+   This project is based on an educational assignment created and provided by 
+   Hive Helsinki and the 42 Network. The original project specification, subject 
+   content, and related test materials are the intellectual property of the 42 
+   Network (<https://www.42network.org>) and are used here for educational, 
+   non-commercial purposes only. This license applies only to the implementation 
+   (i.e., the code you see here), not to the exercise design or documentation 
+   from 42.
+
+7. Additional Use or Licensing  
+   If you wish to use this software outside the terms described above — including 
+   for commercial use, public open-source projects, or broader distribution — 
+   please contact the author to request alternate licensing terms.
+
+  Contact: helena.utzig@gmail.com
