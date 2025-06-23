@@ -3,7 +3,6 @@
 # Fast fail: Exit if any command fails
 set -e
 
-# For debugging:
 echo "Environment variables loaded for WordPress:"
 env | grep -E '^(WP_|DB_|DOMAIN_NAME)'
 
@@ -18,33 +17,10 @@ env | grep -E '^(WP_|DB_|DOMAIN_NAME)'
 : "${DB_HOST:?Missing DB_HOST}"
 : "${DOMAIN_NAME:?Missing DOMAIN_NAME}"
 
-# Optional extra user vars (commented for now, not sure if needed)
-# WP_USER=${WP_USER:-}
-# WP_USER_EMAIL=${WP_USER_EMAIL:-}
-# WP_USER_PASSWORD=${WP_USER_PASSWORD:-}
-
-# Wait for DB to be ready
-#echo "Waiting for MariaDB to be ready..."
-#until mysql -h"${DB_HOST}" -u"${DB_USER}" -p"${DB_USER_PWD}" -e "SELECT 1;" > /dev/null 2>&1; do
-#  echo "Still waiting for MariaDB..."
-#  sleep 1
-#done
-#echo "MariaDB is up."
-
-# Wait for MariaDB to be ready
-echo "Waiting for MariaDB to be ready using mariadb-admin ping..."
-if ! mariadb-admin ping \
-  --protocol=tcp \
-  --host="$DB_HOST" \
-  --user="$DB_USER" \
-  --password="$DB_USER_PWD" \
-  #--connect-timeout=60 \
-  --wait \
-  >/dev/null 2>&1; then
-  echo "MariaDB did not become ready in time. Exiting."
-  #exit 1
-fi
-echo "MariaDB is up."
+# Optional extra user vars (empty if not set)
+WP_USER=${WP_USER:-}
+WP_USER_EMAIL=${WP_USER_EMAIL:-}
+WP_USER_PWD=${WP_USER_PWD:-}
 
 # Change to the WordPress document root
 cd /var/www/html
@@ -52,8 +28,20 @@ cd /var/www/html
 # Ensure idempotent WP startup
 MARKER=".initialized"
 
-if [ ! -f "${MARKER}" ]; then
+if [ ! -e "${MARKER}" ]; then
   echo "First time setup in progress..."
+
+  echo "Waiting for MariaDB to be ready using mariadb-admin ping (blocking)..."
+  # This blocks until the server is ready or fails
+  mariadb-admin ping \
+    --protocol=tcp \
+    --host="$DB_HOST" \
+    --user="$DB_USER" \
+    --password="$DB_USER_PWD" \
+    --wait \
+    >/dev/null 2>&1
+
+  echo "MariaDB is up."
 
   if [ ! -f wp-config.php ]; then
     echo "Downloading WordPress core..."
@@ -76,17 +64,20 @@ if [ ! -f "${MARKER}" ]; then
       --admin_email="${WP_ADMIN_EMAIL}" \
       --skip-email \
       --allow-root
+      
+    # Create additional user if defined
+    if [ -n "$WP_USER" ] && [ -n "$WP_USER_EMAIL" ] && [ -n "$WP_USER_PWD" ]; then
+      echo "Creating additional user: $WP_USER"
+      ./wp-cli.phar user create "$WP_USER" "$WP_USER_EMAIL" \
+        --user_pass="$WP_USER_PWD" \
+        --role=subscriber \
+        --allow-root
+    fi
+    
   else
     echo "wp-config.php already exists. Skipping core install."
   fi
 
-  # Create additional user if defined (optional block)
-  # if [ -n "$WP_USER" ] && [ -n "$WP_USER_EMAIL" ] && [ -n "$WP_USER_PASSWORD" ]; then
-  #   echo "Creating additional user: $WP_USER"
-  #   wp user create "$WP_USER" "$WP_USER_EMAIL" \
-  #     --user_pass="$WP_USER_PASSWORD" \
-  #     --allow-root
-  # fi
 
   echo "Setting permissions..."
   chown -R www-data:www-data /var/www/html
