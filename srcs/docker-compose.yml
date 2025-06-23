@@ -53,8 +53,8 @@ services:
     restart: always
     environment:
       - DOMAIN_NAME=${DOMAIN_NAME}
-      - CERTS_=${CERTS_}
-      - CERTS_KEY_=${CERTS_KEY_}
+      # - CERTS_=${CERTS_}
+      # - CERTS_KEY_=${CERTS_KEY_}
     #env_file: ./.env   # Only needed if running docker-compose directly
     build:
       context: ./requirements/nginx
