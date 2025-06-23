@@ -1,33 +1,24 @@
 #!/bin/sh
+# Use the Bourne shell as the script interpreter
 
+# Exit immediately if any command exits with a non-zero status (fail fast)
 set -e
 
-# Required environment variables
-: "${DOMAIN_NAME:?DOMAIN_NAME not set}"
-: "${CERTS_:=/etc/nginx/ssl/nginx.crt}"
-: "${CERTS_KEY_:=/etc/nginx/ssl/nginx.key}"
+# Generate a self-signed SSL certificate valid for 365 days
+# - Creates a 2048-bit RSA key
+# - No passphrase on the private key (-nodes)
+# - Outputs key and cert to /etc/nginx/ssl/
+# - Sets the subject's common name (CN) to the domain name
+openssl req -x509 -days 365 -newkey rsa:2048 -nodes \
+    -keyout /etc/nginx/ssl/cert.key \
+    -out /etc/nginx/ssl/cert.crt \
+    -subj "/CN=$DOMAIN_NAME"
 
-mkdir -p "$(dirname "$CERTS_")"
+# Set strict permissions on the private key (read/write for owner only)
+chmod 600 /etc/nginx/ssl/cert.key
 
-# Generate self-signed cert if not present
-if [ ! -f "$CERTS_" ] || [ ! -f "$CERTS_KEY_" ]; then
-    echo "Generating self-signed cert for $DOMAIN_NAME..."
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-        -out "$CERTS_" \
-        -keyout "$CERTS_KEY_" \
-        -subj "/C=FI/L=Helsinki/O=Hive/OU=Student/CN=$DOMAIN_NAME"
-    chmod 644 "$CERTS_"
-    chmod 600 "$CERTS_KEY_"
-else
-    echo "Certificates already exist. Skipping generation."
-fi
+# Set standard permissions on the certificate (readable by others)
+chmod 644 /etc/nginx/ssl/cert.crt
 
-# Replace placeholders in config
-sed -e "s|\${DOMAIN_NAME}|$DOMAIN_NAME|g" \
-    -e "s|\${CERTS_}|$CERTS_|g" \
-    -e "s|\${CERTS_KEY_}|$CERTS_KEY_|g" \
-    /etc/nginx/http.d/default.conf.template > /etc/nginx/http.d/default.conf
-
-# Start NGINX
-echo "Starting NGINX..."
+# Start NGINX in the foreground (keep container running)
 exec nginx -g "daemon off;"
