@@ -108,7 +108,7 @@ inception/
             ├── conf/               # NGINX virtual host + TLS config
             └── tools/              # Entrypoint scripts, etc.
 ```
-Why This Structure Matters?
+Why this directory structure matters?
 - Service Isolation: Each container’s build context is separated, following Docker's single responsibility principle.
 - Modularity: Easy to work on NGINX, WordPress, or MariaDB independently, simplifying debugging and refactoring.
 - Configuration Hygiene: Grouping conf/ and tools/ ensures that configuration files and entrypoint logic stay out of the Dockerfile itself.
