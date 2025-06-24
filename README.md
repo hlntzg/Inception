@@ -83,7 +83,7 @@ The data persistence is handled with host-mounted Docker volumes. All data store
 - `~/data/wordpress` for WordPress content and uploads
 
 
-## Directory Structure
+## Project Structure
 Each service is isolated into its own directory, with configuration and setup scripts neatly separated. This structure supports a modular and maintainable infrastructure, aligning with Docker best practices.
 ```
 inception/
