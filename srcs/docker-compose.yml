@@ -1,9 +1,11 @@
 services:
+  # ---------- MariaDB Service ----------
   mariadb:
     container_name: mariadb
-    image: mariadb
+    image: mariadb  # This will be overridden by the build context below
     restart: always
     environment:
+      # Environment variables for database setup (provided by .env)
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_USER_PWD=${DB_USER_PWD}
@@ -11,17 +13,19 @@ services:
       - DB_ROOT_PWD=${DB_ROOT_PWD}
     build:
       context: ./requirements/mariadb
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile  # Uses a custom Dockerfile for MariaDB
     volumes:
-      - wordpress_db:/var/lib/mysql
+      - wordpress_db:/var/lib/mysql  # Persistent data volume for database
     networks:
-      - inception
+      - inception  # Connects to the custom bridge network
 
+  # ---------- WordPress Service ----------
   wordpress:
     container_name: wordpress
-    image: wordpress
+    image: wordpress  # Overridden by the build context below
     restart: always
     environment:
+      # WordPress config + connection to database
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
@@ -36,50 +40,52 @@ services:
       - WP_USER_EMAIL=${WP_USER_EMAIL}
     build:
       context: ./requirements/wordpress
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile  # Custom WordPress Dockerfile
     depends_on:
-      - mariadb
+      - mariadb  # Ensures DB starts before WordPress
     volumes:
-      - wordpress_files:/var/www/html
+      - wordpress_files:/var/www/html  # Mount persistent WordPress content
     networks:
       - inception
 
+  # ---------- NGINX Service ----------
   nginx:
     container_name: nginx
-    image: nginx
+    image: nginx  # Overridden by build context
     restart: always
     environment:
       - DOMAIN_NAME=${DOMAIN_NAME}
     build:
       context: ./requirements/nginx
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile  # Custom NGINX Dockerfile
     depends_on:
       - wordpress
       - mariadb
     ports:
-      - "443:443"
+      - "443:443"  # Expose HTTPS port to host
     volumes:
-      - wordpress_files:/var/www/html:ro # Nginx just needs read-only access to WordPress files
+      - wordpress_files:/var/www/html:ro  # Read-only access to WP files
     networks:
       - inception
-  
+
+# ---------- Named Volumes ----------
 volumes:
   wordpress_files:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${HOME}/data/wordpress
+      device: ${HOME}/data/wordpress  # WordPress files stored on host
 
   wordpress_db:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ${HOME}/data/mariadb
+      device: ${HOME}/data/mariadb  # MariaDB data stored on host
 
+# ---------- Network ----------
 networks:
   inception:
     name: inception
-    driver: bridge
-
+    driver: bridge  # Default isolated network for all services
