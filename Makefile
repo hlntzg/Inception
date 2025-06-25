@@ -24,8 +24,8 @@ all: up
 
 # Check for docker-compose installation
 check:
-	@command -v docker >/dev/null 2>&1 || { echo "$(RED)Error: Docker is not installed.$(RESET)"; exit 1; }
-	@command -v docker-compose >/dev/null 2>&1 || command -v docker >/dev/null 2>&1 || { echo "$(RED)Error: Docker Compose is not installed.$(RESET)"; exit 1; }
+	command -v docker >/dev/null 2>&1 || { echo "$(RED)Error: Docker is not installed.$(RESET)"; exit 1; }
+	command -v docker-compose >/dev/null 2>&1 || command -v docker >/dev/null 2>&1 || { echo "$(RED)Error: Docker Compose is not installed.$(RESET)"; exit 1; }
 
 up: check build_dirs
 	echo -e "$(YELLOW)Building and starting containers...$(RESET)"
@@ -47,7 +47,7 @@ ps:
 logs:
 	echo -e "$(BLUE)Streaming container logs...$(RESET)" 
 	echo -e "$(BLUE)Press Ctrl+C to exit$(RESET)"
-	$(DOCKER_COMPOSE) logs -f
+	-$(DOCKER_COMPOSE) logs -f
 
 clean: down
 	echo -e "$(RED)Removing data directories in $(DATA_DIR)...$(RESET)"
@@ -61,11 +61,6 @@ clean: down
 fclean: clean
 	echo -e "$(RED)Removing all Docker data and local volumes...$(RESET)"
 	$(DOCKER_COMPOSE) down -v --rmi all
-	#ifeq (, $(shell which docker-compose))
-	#	docker compose $(DOCKER_COMPOSE_FILE) down -v --rmi all
-	#else
-	#	docker-compose $(DOCKER_COMPOSE_FILE) down -v --rmi all
-	#endif
 	echo -e "$(GREEN)All docker images, volumes, and networks have been removed.$(RESET)"
 
 re: fclean all
@@ -76,7 +71,7 @@ help:
 	echo "  down         Stop containers"
 	echo "  ps           Show container status"
 	echo "  logs         Show container logs"
-	echo "  clean        Remove data directories"
+	echo "  clean        Stop containers and remove data directories"
 	echo "  fclean       Remove all Docker data and volumes"
 	echo "  re           Rebuild everything"
 	echo "  help         Show this help message"

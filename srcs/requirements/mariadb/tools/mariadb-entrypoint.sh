@@ -7,14 +7,14 @@ set -e
 : "${DB_ROOT_USER:?Missing DB_ROOT_USER}"
 : "${DB_ROOT_PWD:?Missing DB_ROOT_PWD}"
 
-echo "[+] Checking MariaDB initialization..."
+echo "Checking MariaDB initialization..."
 
 if [ ! -d "/var/lib/mysql/mysql" ]; then
-    echo "[+] Initializing MariaDB data directory..."
+    echo "Initializing MariaDB data directory..."
     mariadb-install-db --user=mysql --datadir=/var/lib/mysql
 fi
 
-echo "[+] Running database setup..."
+echo "Running database setup..."
 
 # Start MariaDB in bootstrap mode to run initialization SQL commands without starting the full server
 mysqld --user=mysql --bootstrap <<EOF
@@ -39,6 +39,9 @@ mysqld --user=mysql --bootstrap <<EOF
     -- Ensure the root user password is set even if the user already exists
     ALTER USER ${DB_ROOT_USER}@'%' IDENTIFIED BY '${DB_ROOT_PWD}';
 
+    -- Grant full privileges on the database to dbroot as well
+    GRANT ALL PRIVILEGES ON ${DB_NAME}.* TO ${DB_ROOT_USER}@'%' WITH GRANT OPTION;
+
     -- Secure the built-in root@localhost
     ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PWD}';
 
@@ -46,5 +49,5 @@ mysqld --user=mysql --bootstrap <<EOF
     FLUSH PRIVILEGES;
 EOF
 
-echo "[+] Starting MariaDB normally..."
+echo "Starting MariaDB normally..."
 exec mysqld --user=mysql

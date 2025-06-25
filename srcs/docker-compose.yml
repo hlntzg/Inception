@@ -1,7 +1,7 @@
 services:
   mariadb:
     container_name: mariadb
-    image: mariadb:hutzig
+    image: mariadb
     restart: always
     environment:
       - DB_NAME=${DB_NAME}
@@ -9,8 +9,7 @@ services:
       - DB_USER_PWD=${DB_USER_PWD}
       - DB_ROOT_USER=${DB_ROOT_USER}
       - DB_ROOT_PWD=${DB_ROOT_PWD}
-      - DB_HOST=${DB_HOST}
-    #env_file: ./.env   # Only needed if running docker-compose directly
+    #  - DB_HOST=${DB_HOST}
     build:
       context: ./requirements/mariadb
       dockerfile: Dockerfile
@@ -21,7 +20,7 @@ services:
 
   wordpress:
     container_name: wordpress
-    image: wordpress:hutzig
+    image: wordpress
     restart: always
     environment:
       - DOMAIN_NAME=${DOMAIN_NAME}
@@ -36,7 +35,6 @@ services:
       - WP_USER=${WP_USER}
       - WP_USER_PWD=${WP_USER_PWD}
       - WP_USER_EMAIL=${WP_USER_EMAIL}
-    #env_file: ./.env   # Only needed if running docker-compose directly
     build:
       context: ./requirements/wordpress
       dockerfile: Dockerfile
@@ -49,13 +47,10 @@ services:
 
   nginx:
     container_name: nginx
-    image: nginx:hutzig
+    image: nginx
     restart: always
     environment:
       - DOMAIN_NAME=${DOMAIN_NAME}
-      # - CERTS_=${CERTS_}
-      # - CERTS_KEY_=${CERTS_KEY_}
-    #env_file: ./.env   # Only needed if running docker-compose directly
     build:
       context: ./requirements/nginx
       dockerfile: Dockerfile

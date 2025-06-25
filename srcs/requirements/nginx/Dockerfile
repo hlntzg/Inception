@@ -20,7 +20,8 @@
 
 # ENTRYPOINT ["/usr/local/bin/nginx-entrypoint.sh"]
 
-
+# Base image required Alpine penultimate stable version
+# https://alpinelinux.org/releases/
 FROM alpine:3.21.3
 
 RUN apk update && \
@@ -32,6 +33,9 @@ COPY tools/nginx-entrypoint.sh /usr/local/bin/
 
 # Make the entrypoint script executable
 RUN chmod +x /usr/local/bin/nginx-entrypoint.sh
+
+# Expose HTTPS port
+EXPOSE 443
 
 # Set the container entrypoint to the custom script
 ENTRYPOINT ["/usr/local/bin/nginx-entrypoint.sh"]
