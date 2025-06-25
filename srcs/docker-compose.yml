@@ -9,7 +9,6 @@ services:
       - DB_USER_PWD=${DB_USER_PWD}
       - DB_ROOT_USER=${DB_ROOT_USER}
       - DB_ROOT_PWD=${DB_ROOT_PWD}
-    #  - DB_HOST=${DB_HOST}
     build:
       context: ./requirements/mariadb
       dockerfile: Dockerfile
