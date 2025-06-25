@@ -27,7 +27,7 @@ From the root directory, run: `make`. This command will:
 - Build and start all containers in the background
   
 ### 2. Access the Services
-Open the browser and go to: `https://hutzig.42.fr`. WordPress can be accessed at: `https://hutzig.42.fr/wp-hutzig.php`
+Open the browser and go to: `https://hutzig.42.fr`.
 
 ### 3. Monitor and Control
 - Check container status: `make ps`.
