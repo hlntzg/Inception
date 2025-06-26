@@ -1,22 +1,27 @@
 #!/bin/sh
-set -e
 
+set -e  # 
+# Exit immediately if a command exits with a non-zero status
+
+# Load required environment variables and ensure none are missing
+echo "Environment variables loaded for MariaDB:"
 : "${DB_NAME:?Missing DB_NAME}"
 : "${DB_USER:?Missing DB_USER}"
 : "${DB_USER_PWD:?Missing DB_USER_PWD}"
 : "${DB_ROOT_USER:?Missing DB_ROOT_USER}"
 : "${DB_ROOT_PWD:?Missing DB_ROOT_PWD}"
 
+# Check if the MariaDB system database is already initialized
 echo "Checking MariaDB initialization..."
-
 if [ ! -d "/var/lib/mysql/mysql" ]; then
     echo "Initializing MariaDB data directory..."
     mariadb-install-db --user=mysql --datadir=/var/lib/mysql
 fi
 
+# Run initial database setup in bootstrap mode
 echo "Running database setup..."
 
-# Start MariaDB in bootstrap mode to run initialization SQL commands without starting the full server
+# Start MariaDB in bootstrap mode to run SQL directly without launching a full server
 mysqld --user=mysql --bootstrap <<EOF
     -- Select the system database
     USE mysql;
@@ -49,5 +54,6 @@ mysqld --user=mysql --bootstrap <<EOF
     FLUSH PRIVILEGES;
 EOF
 
+# Start MariaDB in normal foreground mode
 echo "Starting MariaDB normally..."
 exec mysqld --user=mysql

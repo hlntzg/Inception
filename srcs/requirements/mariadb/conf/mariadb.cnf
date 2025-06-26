@@ -1,43 +1,38 @@
-# Global server settings
-[server]
-
-# Main MariaDB server daemon
+# MariaDB server Daemon Settings
 [mysqld]
-user                    = mysql
-port                    = 3306
-bind-address            = 0.0.0.0
-socket                  = /run/mysqld/mysqld.sock
-basedir                 = /usr
-datadir                 = /var/lib/mysql
-tmpdir                  = /tmp
-lc-messages-dir         = /usr/share/mysql
-lc-messages             = en_US
-skip-networking         = 0
-skip-name-resolve       = 1
-server-id               = 1
 
+# Basic server identity and I/O setup
+user                    = mysql                     # Run mysqld as 'mysql' user
+port                    = 3306                      # Standard MySQL/MariaDB port
+bind-address            = 0.0.0.0                   # Listen on all interfaces
+socket                  = /run/mysqld/mysqld.sock   # Unix socket path for local connections
+basedir                 = /usr                      # Base directory for MariaDB install
+datadir                 = /var/lib/mysql            # Where DB files are stored
+tmpdir                  = /tmp                      # Temporary files directory
 
-# Connection settings
-max_allowed_packet      = 256M
-max_connections         = 200
+# Localization
+lc-messages-dir         = /usr/share/mysql          # Directory for localized messages
+lc-messages             = en_US                     # Message language
 
-# Logging
-log_error               = /var/log/mysql/error.log
-slow_query_log          = 1
-slow_query_log_file     = /var/log/mysql/mariadb-slow.log
-long_query_time         = 10
-log_bin                 = /var/log/mysql/mysql-bin.log
-expire_logs_days        = 10
+# Networking
+skip-name-resolve       = 1                         # Disable DNS lookup for client hostnames (improves security & performance)
 
-# Character Set
-character-set-server    = utf8mb4
-collation-server        = utf8mb4_general_ci
+# Connection Settings
+max_allowed_packet      = 256M                      # Max size of a single packet
+max_connections         = 100                       # Max simultaneous client connections
 
-# InnoDB Performance Tuning
-innodb_buffer_pool_size         = 420M
-innodb_log_file_size            = 256M
-innodb_flush_log_at_trx_commit  = 1
+# Logging Configuration
+log_error               = /var/log/mysql/error.log          # Main error log
 
-# Client settings
+# Character Set Defaults
+character-set-server    = utf8mb4                  # Default character set for the server
+collation-server        = utf8mb4_general_ci       # Default collation (case-insensitive, accent-insensitive)
+
+# InnoDB Performance Tuning (for performance and crash safety)
+innodb_buffer_pool_size         = 420M             # Main memory allocation for caching InnoDB data and indexes
+innodb_log_file_size            = 256M             # Size of each InnoDB redo log file
+innodb_flush_log_at_trx_commit  = 1                # 1 = safest; flush on every transaction commit
+
+# Client Defaults Settings
 [client]
-default-character-set    = utf8mb4
+default-character-set    = utf8mb4                 # Ensure client uses utf8mb4 when connecting

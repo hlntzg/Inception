@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e # Fast fail: Exit if any command fails
+set -e # Exit immediately if a command exits with a non-zero status
 
 echo "Environment variables loaded for WordPress:"
 env | grep -E '^(WP_|DB_|DOMAIN_NAME)'
