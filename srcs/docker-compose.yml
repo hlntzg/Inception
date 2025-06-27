@@ -2,7 +2,7 @@ services:
   # ---------- MariaDB Service ----------
   mariadb:
     container_name: mariadb
-    image: mariadb  # This will be overridden by the build context below
+    image: mariadb:hutzig  # This will be overridden by the build context below
     restart: always
     environment:
       # Environment variables for database setup (provided by .env)
@@ -22,7 +22,7 @@ services:
   # ---------- WordPress Service ----------
   wordpress:
     container_name: wordpress
-    image: wordpress  # Overridden by the build context below
+    image: wordpress:hutzig  # Overridden by the build context below
     restart: always
     environment:
       # WordPress config + connection to database
@@ -51,7 +51,7 @@ services:
   # ---------- NGINX Service ----------
   nginx:
     container_name: nginx
-    image: nginx  # Overridden by build context
+    image: nginx:hutzig  # Overridden by build context
     restart: always
     environment:
       - DOMAIN_NAME=${DOMAIN_NAME}
