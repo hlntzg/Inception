@@ -12,8 +12,9 @@ COPY ./conf/mariadb.cnf /etc/my.cnf
 # Set permissions on config
 RUN chmod 644 /etc/my.cnf
 
-# Prepare necessary directories and permissions
-# Initialize the MariaDB data directory
+# Create required directories for MariaDB runtime and logging
+# Change ownership to mysql user to avoid permission issues
+# Then initialize the MariaDB data directory
 RUN mkdir -p \
       /run/mysqld \
       /var/lib/mysql \
@@ -31,8 +32,8 @@ RUN mkdir -p \
 COPY ./tools/mariadb-entrypoint.sh /usr/local/bin/mariadb-entrypoint.sh
 RUN chmod +x /usr/local/bin/mariadb-entrypoint.sh 
 
-# Expose MariaDB default port
+# Expose MariaDB default port (3306)
 EXPOSE 3306
 
-# Define the entrypoint for container startup
+# Set the container entrypoint to the custom script
 ENTRYPOINT ["/usr/local/bin/mariadb-entrypoint.sh"]

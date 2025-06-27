@@ -1,8 +1,12 @@
 #!/bin/sh
-# Use the Bourne shell as the script interpreter
 
-# Exit immediately if any command exits with a non-zero status (fail fast)
-set -e
+set -e # Exit immediately if a command exits with a non-zero status
+
+echo "Environment variables loaded for WordPress:"
+env | grep -E '^(DOMAIN_NAME)'
+
+# Domain
+: "${DOMAIN_NAME:?Missing DOMAIN_NAME}"
 
 # Generate a self-signed SSL certificate valid for 365 days
 # - Creates a 2048-bit RSA key

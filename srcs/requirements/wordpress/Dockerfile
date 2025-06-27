@@ -43,5 +43,5 @@ RUN chmod +x /usr/local/bin/entrypoint.sh && \
 # Expose PHP-FPM port (used by NGINX)
 EXPOSE 9000
 
-# Use the custom entrypoint script to initialize the container
+# Set the container entrypoint to the custom script
 ENTRYPOINT ["/usr/local/bin/wordpress-entrypoint.sh"]
