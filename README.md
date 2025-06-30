@@ -6,24 +6,29 @@ Inception is a DevOps project that focuses on system administration using contai
 
 > [!TIP]
 > Learn more about the basic concepts in a easy way from my personal notes: [Conceptual Overview](https://github.com/hlntzg/Inception/wiki)
-
+ 
 The infrastructure includes:
 - `NGINX` as a reverse proxy, handling HTTPS (TLS 1.2/1.3).
 - `WordPress` running with PHP-FPM, serving dynamic content (no NGINX).
 - `MariaDB` as the database backend (no NGINX).
 
-All services are built on top of the second-to-latest stable version (at the time of writing) of lightweight Linux distributions such as Alpine or Debian. They are configured to communicate through isolated Docker networks and persistent volumes — one for the WordPress database (MariaDB) and one for the WordPress website files..
-
+All services are built on top of the second-to-latest stable version (at the time of writing) of lightweight Linux distributions such as Alpine or Debian. They are configured to communicate through isolated Docker networks and persistent volumes — one for the WordPress database (MariaDB) and one for the WordPress website files.
 
 ## Features
-- Docker-based deployment using a single Makefile (build and start everything via docker-compose)
-- Conditional logic to detect whether docker-compose or docker compose is available, making it compatible with various Docker setups.
-- TLS-secured NGINX reverse proxy
-- Dynamic PHP website via WordPress
-- Persistent MariaDB storage and WordPress files
-- Declarative configuration with `.env` file
+- Docker-based deployment using a single Makefile (build and start everything via docker-compose);
+- Conditional logic to detect whether docker-compose or docker compose is available, making it compatible with various Docker setups;
+- TLS-secured NGINX reverse proxy;
+- Dynamic PHP website via WordPress;
+- Persistent MariaDB storage and WordPress files;
+- Declarative configuration with `.env` file.
 
 ## Usage
+> [!IMPORTANT]
+> While Docker Desktop allows running this project on **macOS** or **Windows**, it was developed and tested specifically for native **Linux** environments.
+> Due to differences in filesystem structure, volume mounting, and permissions, running it outside Linux (even with Docker Desktop) may lead to unexpected behavior.
+> For full compatibility and stability, use a ```Linux virtual machine (VM)``` if you're working on macOS or Windows.
+> Follow this [VM Setup Guide](https://github.com/hlntzg/Inception/wiki/VM-Setup-Guide) to prepare your environment properly, before you start.
+
 ### 1. Start the Project
 From the root directory, run: `make`. This command will:
 - Check for Docker and Docker Compose
